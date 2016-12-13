@@ -60,7 +60,7 @@ import org.apache.jasper.util.Enumerator;
 /**
  * Implementation of the PageContext class from the JSP spec. Also doubles as a
  * VariableResolver for the EL.
- * 
+ *
  * @author Anil K. Vijendran
  * @author Larry Cable
  * @author Hans Bergsten
@@ -71,8 +71,8 @@ import org.apache.jasper.util.Enumerator;
  */
 public class PageContextImpl extends PageContext {
 
-    private static JspFactory jspf = JspFactory.getDefaultFactory();
-    
+	private static JspFactory jspf = JspFactory.getDefaultFactory();
+
 	private BodyContentImpl[] outs;
 
 	private int depth;
@@ -97,12 +97,12 @@ public class PageContextImpl extends PageContext {
 	private transient ServletResponse response;
 
 	private transient HttpSession session;
-	
+
 	private transient ELContextImpl elContext;
 
 	private boolean isIncluded;
-	
-	
+
+
 	// initial output stream
 	private transient JspWriter out;
 
@@ -118,8 +118,8 @@ public class PageContextImpl extends PageContext {
 	}
 
 	public void initialize(Servlet servlet, ServletRequest request,
-			ServletResponse response, String errorPageURL,
-			boolean needsSession, int bufferSize, boolean autoFlush)
+						   ServletResponse response, String errorPageURL,
+						   boolean needsSession, int bufferSize, boolean autoFlush)
 			throws IOException {
 
 		_initialize(servlet, request, response, errorPageURL, needsSession,
@@ -127,8 +127,8 @@ public class PageContextImpl extends PageContext {
 	}
 
 	private void _initialize(Servlet servlet, ServletRequest request,
-			ServletResponse response, String errorPageURL,
-			boolean needsSession, int bufferSize, boolean autoFlush)
+							 ServletResponse response, String errorPageURL,
+							 boolean needsSession, int bufferSize, boolean autoFlush)
 			throws IOException {
 
 		// initialize state
@@ -138,7 +138,7 @@ public class PageContextImpl extends PageContext {
 		this.errorPageURL = errorPageURL;
 		this.request = request;
 		this.response = response;
-		
+
 		// initialize application context
 		this.applicationContext = JspApplicationContextImpl.getInstance(context);
 
@@ -150,9 +150,9 @@ public class PageContextImpl extends PageContext {
 
 		// initialize the initial out ...
 		depth = -1;
-        if (bufferSize == JspWriter.DEFAULT_BUFFER) {
-            bufferSize = Constants.DEFAULT_BUFFER_SIZE;
-        }
+		if (bufferSize == JspWriter.DEFAULT_BUFFER) {
+			bufferSize = Constants.DEFAULT_BUFFER_SIZE;
+		}
 		if (this.baseOut == null) {
 			this.baseOut = new JspWriterImpl(response, bufferSize, autoFlush);
 		} else {
@@ -191,21 +191,24 @@ public class PageContextImpl extends PageContext {
 				((JspWriterImpl) out).flushBuffer();
 			}
 		} catch (IOException ex) {
-            throw MESSAGES.errorFlushingData(ex);
+			throw MESSAGES.errorFlushingData(ex);
 		} finally {
-		    servlet = null;
-		    config = null;
-		    context = null;
-		    applicationContext = null;
-		    elContext = null;
-		    errorPageURL = null;
-		    request = null;
-		    response = null;
-		    depth = -1;
-		    baseOut.recycle();
-		    session = null;
-		    attributes.clear();
-        }
+			servlet = null;
+			config = null;
+			context = null;
+			applicationContext = null;
+			elContext = null;
+			errorPageURL = null;
+			request = null;
+			response = null;
+			depth = -1;
+			baseOut.recycle();
+			session = null;
+			attributes.clear();
+			for (BodyContentImpl body: outs) {
+				body.recycle();
+			}
+		}
 	}
 
 	public Object getAttribute(final String name) {
@@ -250,23 +253,23 @@ public class PageContextImpl extends PageContext {
 
 	private Object doGetAttribute(String name, int scope) {
 		switch (scope) {
-		case PAGE_SCOPE:
-			return attributes.get(name);
+			case PAGE_SCOPE:
+				return attributes.get(name);
 
-		case REQUEST_SCOPE:
-			return request.getAttribute(name);
+			case REQUEST_SCOPE:
+				return request.getAttribute(name);
 
-		case SESSION_SCOPE:
-			if (session == null) {
-				throw MESSAGES.cannotUseSessionScope();
-			}
-			return session.getAttribute(name);
+			case SESSION_SCOPE:
+				if (session == null) {
+					throw MESSAGES.cannotUseSessionScope();
+				}
+				return session.getAttribute(name);
 
-		case APPLICATION_SCOPE:
-			return context.getAttribute(name);
+			case APPLICATION_SCOPE:
+				return context.getAttribute(name);
 
-		default:
-			throw MESSAGES.invalidScope();
+			default:
+				throw MESSAGES.invalidScope();
 		}
 	}
 
@@ -318,27 +321,27 @@ public class PageContextImpl extends PageContext {
 	private void doSetAttribute(String name, Object o, int scope) {
 		if (o != null) {
 			switch (scope) {
-			case PAGE_SCOPE:
-				attributes.put(name, o);
-				break;
+				case PAGE_SCOPE:
+					attributes.put(name, o);
+					break;
 
-			case REQUEST_SCOPE:
-				request.setAttribute(name, o);
-				break;
+				case REQUEST_SCOPE:
+					request.setAttribute(name, o);
+					break;
 
-			case SESSION_SCOPE:
-				if (session == null) {
-					throw MESSAGES.cannotUseSessionScope();
-				}
-				session.setAttribute(name, o);
-				break;
+				case SESSION_SCOPE:
+					if (session == null) {
+						throw MESSAGES.cannotUseSessionScope();
+					}
+					session.setAttribute(name, o);
+					break;
 
-			case APPLICATION_SCOPE:
-				context.setAttribute(name, o);
-				break;
+				case APPLICATION_SCOPE:
+					context.setAttribute(name, o);
+					break;
 
-			default:
-				throw MESSAGES.invalidScope();
+				default:
+					throw MESSAGES.invalidScope();
 			}
 		} else {
 			removeAttribute(name, scope);
@@ -364,27 +367,27 @@ public class PageContextImpl extends PageContext {
 
 	private void doRemoveAttribute(String name, int scope) {
 		switch (scope) {
-		case PAGE_SCOPE:
-			attributes.remove(name);
-			break;
+			case PAGE_SCOPE:
+				attributes.remove(name);
+				break;
 
-		case REQUEST_SCOPE:
-			request.removeAttribute(name);
-			break;
+			case REQUEST_SCOPE:
+				request.removeAttribute(name);
+				break;
 
-		case SESSION_SCOPE:
-			if (session == null) {
-				throw MESSAGES.cannotUseSessionScope();
-			}
-			session.removeAttribute(name);
-			break;
+			case SESSION_SCOPE:
+				if (session == null) {
+					throw MESSAGES.cannotUseSessionScope();
+				}
+				session.removeAttribute(name);
+				break;
 
-		case APPLICATION_SCOPE:
-			context.removeAttribute(name);
-			break;
+			case APPLICATION_SCOPE:
+				context.removeAttribute(name);
+				break;
 
-		default:
-			throw MESSAGES.invalidScope();
+			default:
+				throw MESSAGES.invalidScope();
 		}
 	}
 
@@ -414,13 +417,13 @@ public class PageContextImpl extends PageContext {
 			return REQUEST_SCOPE;
 
 		if (session != null) {
-            try {
-                if (session.getAttribute(name) != null)
-                    return SESSION_SCOPE;
-            } catch(IllegalStateException ise) {
-                // Session has been invalidated.
-                // Ignore and fall through to application scope.
-            }
+			try {
+				if (session.getAttribute(name) != null)
+					return SESSION_SCOPE;
+			} catch(IllegalStateException ise) {
+				// Session has been invalidated.
+				// Ignore and fall through to application scope.
+			}
 		}
 
 		if (context.getAttribute(name) != null)
@@ -460,12 +463,12 @@ public class PageContextImpl extends PageContext {
 			return o;
 
 		if (session != null) {
-            try {
-                o = session.getAttribute(name);
-            } catch(IllegalStateException ise) {
-                // Session has been invalidated.
-                // Ignore and fall through to application scope.
-            }
+			try {
+				o = session.getAttribute(name);
+			} catch(IllegalStateException ise) {
+				// Session has been invalidated.
+				// Ignore and fall through to application scope.
+			}
 			if (o != null)
 				return o;
 		}
@@ -488,23 +491,23 @@ public class PageContextImpl extends PageContext {
 
 	private Enumeration doGetAttributeNamesInScope(int scope) {
 		switch (scope) {
-		case PAGE_SCOPE:
-			return new Enumerator(attributes.keySet().iterator());
+			case PAGE_SCOPE:
+				return new Enumerator(attributes.keySet().iterator());
 
-		case REQUEST_SCOPE:
-			return request.getAttributeNames();
+			case REQUEST_SCOPE:
+				return request.getAttributeNames();
 
-		case SESSION_SCOPE:
-			if (session == null) {
-				throw MESSAGES.cannotUseSessionScope();
-			}
-			return session.getAttributeNames();
+			case SESSION_SCOPE:
+				if (session == null) {
+					throw MESSAGES.cannotUseSessionScope();
+				}
+				return session.getAttributeNames();
 
-		case APPLICATION_SCOPE:
-			return context.getAttributeNames();
+			case APPLICATION_SCOPE:
+				return context.getAttributeNames();
 
-		default:
-			throw MESSAGES.invalidScope();
+			default:
+				throw MESSAGES.invalidScope();
 		}
 	}
 
@@ -527,17 +530,17 @@ public class PageContextImpl extends PageContext {
 	}
 
 	private void doRemoveAttribute(String name) {
-        removeAttribute(name, PAGE_SCOPE);
-        removeAttribute(name, REQUEST_SCOPE);
-        if( session != null ) {
-            try {
-                removeAttribute(name, SESSION_SCOPE);
-            } catch(IllegalStateException ise) {
-                // Session has been invalidated.
-                // Ignore and fall throw to application scope.
-            }
-        }
-        removeAttribute(name, APPLICATION_SCOPE);
+		removeAttribute(name, PAGE_SCOPE);
+		removeAttribute(name, REQUEST_SCOPE);
+		if( session != null ) {
+			try {
+				removeAttribute(name, SESSION_SCOPE);
+			} catch(IllegalStateException ise) {
+				// Session has been invalidated.
+				// Ignore and fall throw to application scope.
+			}
+		}
+		removeAttribute(name, APPLICATION_SCOPE);
 	}
 
 	public JspWriter getOut() {
@@ -572,7 +575,7 @@ public class PageContextImpl extends PageContext {
 	 * Returns the exception associated with this page context, if any. <p/>
 	 * Added wrapping for Throwables to avoid ClassCastException: see Bugzilla
 	 * 31171 for details.
-	 * 
+	 *
 	 * @return The Exception associated with this page context, if any.
 	 */
 	public Exception getException() {
@@ -673,6 +676,7 @@ public class PageContextImpl extends PageContext {
 		// JSP.4.5 If the buffer was flushed, throw IllegalStateException
 		try {
 			out.clear();
+			baseOut.clear();
 		} catch (IOException ex) {
 			throw MESSAGES.illegalClearAfterFlush(ex);
 		}
@@ -854,7 +858,7 @@ public class PageContextImpl extends PageContext {
 	 * go away once the EL interpreter moves out of JSTL and into its own
 	 * project. For now, this is necessary because the standard machinery is too
 	 * slow.
-	 * 
+	 *
 	 * @param expression
 	 *            The expression to be evaluated
 	 * @param expectedType
@@ -866,21 +870,21 @@ public class PageContextImpl extends PageContext {
 	 * @return The result of the evaluation
 	 */
 	public static Object proprietaryEvaluate(final String expression,
-			final Class expectedType, final PageContext pageContext,
-			final ProtectedFunctionMapper functionMap, final boolean escape)
+											 final Class expectedType, final PageContext pageContext,
+											 final ProtectedFunctionMapper functionMap, final boolean escape)
 			throws ELException {
 		Object retValue;
-        final ExpressionFactory exprFactory = jspf.getJspApplicationContext(pageContext.getServletContext()).getExpressionFactory();
+		final ExpressionFactory exprFactory = jspf.getJspApplicationContext(pageContext.getServletContext()).getExpressionFactory();
 		if (SecurityUtil.isPackageProtectionEnabled()) {
 			try {
 				retValue = AccessController
 						.doPrivileged(new PrivilegedExceptionAction() {
 
 							public Object run() throws Exception {
-                                ELContextImpl ctx = (ELContextImpl) pageContext.getELContext();
-                                ctx.setFunctionMapper(new FunctionMapperImpl(functionMap));
+								ELContextImpl ctx = (ELContextImpl) pageContext.getELContext();
+								ctx.setFunctionMapper(new FunctionMapperImpl(functionMap));
 								ValueExpression ve = exprFactory.createValueExpression(ctx, expression, expectedType);
-                                return ve.getValue(ctx);
+								return ve.getValue(ctx);
 							}
 						});
 			} catch (PrivilegedActionException ex) {
@@ -892,10 +896,10 @@ public class PageContextImpl extends PageContext {
 				}
 			}
 		} else {
-            ELContextImpl ctx = (ELContextImpl) pageContext.getELContext();
-            ctx.setFunctionMapper(new FunctionMapperImpl(functionMap));
-            ValueExpression ve = exprFactory.createValueExpression(ctx, expression, expectedType);
-            retValue = ve.getValue(ctx);
+			ELContextImpl ctx = (ELContextImpl) pageContext.getELContext();
+			ctx.setFunctionMapper(new FunctionMapperImpl(functionMap));
+			ValueExpression ve = exprFactory.createValueExpression(ctx, expression, expectedType);
+			retValue = ve.getValue(ctx);
 		}
 		return retValue;
 	}
